@@ -20,6 +20,14 @@ on:
       aws_region:
         description: Target AWS Region
         default: "us-east-1"
+        type: string public.ecr.aws/g8n4d6q1/mlopsbackend
+      ecr_repo_name:
+        description: Target AWS Region
+        default: "public.ecr.aws/g8n4d6q1/mlopsbackend"
+        type: string
+      ml_model_run_id:
+        description: Target AWS Region
+        default: ""
         type: string
 
 jobs:
@@ -44,14 +52,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: prepare ECR repo name based on the Github repository
-        shell: bash
-        run: |
-          set -eux
-
-          # set ecr repo
-          echo "ECR_REPO_NAME=${public.ecr.aws/g8n4d6q1/mlopsbackend}" >> $GITHUB_ENV
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -64,10 +64,10 @@ jobs:
         shell: bash
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPO_NAME }}
+          ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          docker build "${{ inputs.docker_build_dir }}" -f "${{ inputs.path_to_dockerfile }}" -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build "${{ inputs.docker_build_dir }}" -f "${{ inputs.path_to_dockerfile }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}"-t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
