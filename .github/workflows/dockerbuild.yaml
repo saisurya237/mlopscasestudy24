@@ -24,10 +24,10 @@ on:
       aws_region:
         description: Target AWS Region
         default: "us-east-1"
-        type: string public.ecr.aws/g8n4d6q1/mlopsbackend
+        type: string
       ecr_repo_name:
         description: ecr repo name
-        default: "public.ecr.aws/g8n4d6q1/mlopsbackend"
+        default: "mlopsbackend"
         type: string
       ml_model_run_id:
         description: mlflow run id where the model was logged
@@ -57,20 +57,21 @@ jobs:
           aws-region: ${{ inputs.aws_region }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v2
         with:
-          registries: ${{ inputs.aws_account_id }}
-          # mask-password: "true" # see: https://github.com/aws-actions/amazon-ecr-login#docker-credentials ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          registry-type: public
+          mask-password: 'false'
 
       - name: Build, tag, and push backend image to Amazon ECR
         id: build-publish-backend
         shell: bash
         env:
+          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
           ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
           IMAGE_TAG: ${{ inputs.backend_image_tag }}
         run: |
-          docker build "${{ inputs.docker_backend_build_dir }}" -f "${{ inputs.path_to_dockerfile_backend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build "${{ inputs.docker_backend_build_dir }}" -f "${{ inputs.path_to_dockerfile_backend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
