@@ -61,17 +61,16 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           registries: ${{ inputs.aws_account_id }}
-          mask-password: "true" # see: https://github.com/aws-actions/amazon-ecr-login#docker-credentials
+          # mask-password: "true" # see: https://github.com/aws-actions/amazon-ecr-login#docker-credentials ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Build, tag, and push backend image to Amazon ECR
         id: build-publish-backend
         shell: bash
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
           IMAGE_TAG: ${{ inputs.backend_image_tag }}
         run: |
-          docker build "${{ inputs.docker_backend_build_dir }}" -f "${{ inputs.path_to_dockerfile_backend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build "${{ inputs.docker_backend_build_dir }}" -f "${{ inputs.path_to_dockerfile_backend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REPOSITORY:$IMAGE_TAG"
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
