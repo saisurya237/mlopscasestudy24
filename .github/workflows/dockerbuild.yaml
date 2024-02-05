@@ -22,11 +22,11 @@ on:
         default: "us-east-1"
         type: string public.ecr.aws/g8n4d6q1/mlopsbackend
       ecr_repo_name:
-        description: Target AWS Region
+        description: ecr repo name
         default: "public.ecr.aws/g8n4d6q1/mlopsbackend"
         type: string
       ml_model_run_id:
-        description: Target AWS Region
+        description: mlflow run id where the model was logged
         default: ""
         type: string
 
