@@ -6,7 +6,7 @@ on:
         description: Docker backend build directory (default = '.')
         default: "backend"
         type: string
-      docker_fronntend_build_dir:
+      docker_frontend_build_dir:
         description: Docker frontend build directory (default = '.')
         default: "frontend"
         type: string
