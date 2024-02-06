@@ -4,15 +4,16 @@ import os
 import mlflow
 import mlflow.lightgbm
 
+
 # Set the tracking URI to reference the remote workspace
-TRACKING_SERVER_HOST = "ec2-13-49-77-251.eu-north-1.compute.amazonaws.com"
+TRACKING_SERVER_HOST = "ec2-16-171-52-118.eu-north-1.compute.amazonaws.com"
 mlflow.set_tracking_uri(f"http://{TRACKING_SERVER_HOST}:5000") 
 print(f"Tracking Server URI: '{mlflow.get_tracking_uri()}'")
 model_run_id = os.environ.get('ML_MODEL_RUN_ID')
 print(model_run_id)
 
 if model_run_id=="defaultvalue": #for local testing
-    model_uri = "runs:/2ed284c5c12944ec8e6e937ed83027ab/model"
+    model_uri = "runs:/ef04c6d7f2714b8683fea3dbd249239e/model"
 else:
     model_uri =  "runs:/"+model_run_id+"/model"
 
@@ -40,5 +41,5 @@ def get_transaction(df):
     lgb_model = mlflow.lightgbm.load_model(model_uri)
     predictions = lgb_model.predict(df[features], num_iteration=lgb_model.best_iteration, predict_disable_shape_check=True)
     result_df = pd.concat([df, pd.DataFrame(predictions, columns=['prediction'])], axis=1)
-    print(result_df.head())
+    print(result_df.head())    
     return result_df
