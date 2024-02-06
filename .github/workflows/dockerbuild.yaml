@@ -14,8 +14,16 @@ on:
         description: Docker backend build directory (default = '.')
         default: "backend"
         type: string
+      docker_fronntend_build_dir:
+        description: Docker frontend build directory (default = '.')
+        default: "frontend"
+        type: string
       backend_image_tag:
-        description: Tag to apply to images.
+        description: Tag to apply to backend images.
+        type: string
+        default: backend-artifact
+      frontend_image_tag:
+        description: Tag to apply to backend images.
         type: string
         default: backend-artifact
       aws_account_id:
@@ -76,3 +84,18 @@ jobs:
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
           echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Build, tag, and push frontend image to Amazon ECR
+        id: build-publish-frontend
+        shell: bash
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
+          IMAGE_TAG: ${{ inputs.frontend_image_tag }}
+        run: |
+          docker build "${{ inputs.docker_frontend_build_dir }}" -f "${{ inputs.path_to_dockerfile_frontend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
+          echo "image_tag=$IMAGE_TAG" 
+          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      
