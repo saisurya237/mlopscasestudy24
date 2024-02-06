@@ -4,11 +4,11 @@ import os
 import mlflow
 import mlflow.lightgbm
 
-TRACKING_SERVER_HOST = "ec2-13-49-77-251.eu-north-1.compute.amazonaws.com"
+TRACKING_SERVER_HOST = "ec2-16-171-52-118.eu-north-1.compute.amazonaws.com"
 mlflow.set_tracking_uri(f"http://{TRACKING_SERVER_HOST}:5000") 
 print(f"Tracking Server URI: '{mlflow.get_tracking_uri()}'")
 
-model_uri = 'runs:/8b1fdd6e4b8c4c08b475225f718aca23/model'
+model_uri = 'runs:/ef04c6d7f2714b8683fea3dbd249239e/model'
 PATH = "../mlopscasestudy24/data/"
 train_df = pd.read_csv(PATH+"train.csv")
 test_df = pd.read_csv(PATH+"test.csv")

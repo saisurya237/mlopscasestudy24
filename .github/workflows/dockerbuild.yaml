@@ -40,6 +40,14 @@ on:
 env:
   path_to_dockerfile_backend: backend/dockerfile
   path_to_dockerfile_frontend: frontend/dockerfile
+  ECS_FRONTEND_SERVICE: mlops-backend-service      # name of the service
+  ECS_BACKEND_SERVICE: mlops-frontend-service
+  ECS_CLUSTER: mlopscasestudy24                    # name of the cluster
+  ECS_FRONTEND_TASK_DEFINITION: .aws/taskdefinitionecsfrontend.json # path of the JSON task definition
+  ECS_BACKEND_TASK_DEFINITION: .aws/taskdefinitionecsbackend.json
+  FRONTEND_CONTAINER_NAME: "mlops-frontend"
+  BACKEND_CONTAINER_NAME: "mlopsbackend"                          # name of the container name in the task definition
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -96,4 +104,18 @@ jobs:
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
           echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Fill in the new image ID of backend in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+        with:
+          task-definition: ${{ env.ECS_BACKEND_TASK_DEFINITION }}
+          container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+          image: ${{ steps.build-publish-backend.outputs.backend_image_tag }}
+
+      - name: Deploy Amazon ECS task definition for frontend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          cluster: ${{ env.ECS_CLUSTER }}
       
