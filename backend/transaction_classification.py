@@ -18,26 +18,27 @@ else:
 
 print(model_run_id)
 
-def feature_engineering(df, idx, features):
-    for df in [df]:
-        df['sum'] = df[idx].sum(axis=1)  
-        df['min'] = df[idx].min(axis=1)
-        df['max'] = df[idx].max(axis=1)
-        df['mean'] = df[idx].mean(axis=1)
-        df['std'] = df[idx].std(axis=1)
-        df['skew'] = df[idx].skew(axis=1)
-        df['kurt'] = df[idx].kurtosis(axis=1)
-        df['med'] = df[idx].median(axis=1)
-    for feature in features:
-        df['r2_'+feature] = np.round(df[feature], 2)
-        df['r1_'+feature] = np.round(df[feature], 1)
-    return df
+# def feature_engineering(df, idx, features):
+#     for df in [df]:
+#         df['sum'] = df[idx].sum(axis=1)  
+#         df['min'] = df[idx].min(axis=1)
+#         df['max'] = df[idx].max(axis=1)
+#         df['mean'] = df[idx].mean(axis=1)
+#         df['std'] = df[idx].std(axis=1)
+#         df['skew'] = df[idx].skew(axis=1)
+#         df['kurt'] = df[idx].kurtosis(axis=1)
+#         df['med'] = df[idx].median(axis=1)
+#     for feature in features:
+#         df['r2_'+feature] = np.round(df[feature], 2)
+#         df['r1_'+feature] = np.round(df[feature], 1)
+#     return df
 
 def get_transaction(df):
     features = [c for c in df.columns if c not in ['ID_code', 'target']]                            
     idx = df.columns.values[2:202]
-    engineered_data = feature_engineering(df, idx, features                                                                 )
+    # engineered_data = feature_engineering(df, idx, features                                                                 )
     lgb_model = mlflow.lightgbm.load_model(model_uri)
-    predictions = lgb_model.predict(engineered_data[features], num_iteration=lgb_model.best_iteration, predict_disable_shape_check=True)
+    predictions = lgb_model.predict(df[features], num_iteration=lgb_model.best_iteration, predict_disable_shape_check=True)
     result_df = pd.concat([df, pd.DataFrame(predictions, columns=['prediction'])], axis=1)
+    print(result_df.head())
     return result_df
