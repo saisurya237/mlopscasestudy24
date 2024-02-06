@@ -59,10 +59,7 @@ jobs:
     outputs:
       backend_image_tag: ${{ steps.build-publish-backend.outputs.backend_image_tag }}
       backend_full_image: ${{ steps.build-publish-backend.outputs.full_image }}
-    
-    env:
-      ECS_BACKEND_IMAGE: ${{ steps.build-publish-backend.outputs.full_image }}
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -114,7 +111,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_BACKEND_TASK_DEFINITION }}
           container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-          image: ${{ env.ECS_BACKEND_IMAGE }}
+          image: ${{ outputs.backend_full_image }}
 
       - name: Deploy Amazon ECS task definition for frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
