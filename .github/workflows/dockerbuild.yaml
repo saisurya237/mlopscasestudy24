@@ -23,9 +23,9 @@ on:
         type: string
         default: backend-artifact
       frontend_image_tag:
-        description: Tag to apply to backend images.
+        description: Tag to apply to frontend images.
         type: string
-        default: backend-artifact
+        default: frontend-artifact
       aws_account_id:
         description: AWS Account ID
         type: string
@@ -33,9 +33,13 @@ on:
         description: Target AWS Region
         default: "us-east-1"
         type: string
-      ecr_repo_name:
-        description: ecr repo name
+      ecr_backend_repo_name:
+        description: ecr backend repo name
         default: "mlopsbackend"
+        type: string
+      ecr_frontend_repo_name:
+        description: ecr frontend repo name
+        default: "mlopsfrontend"
         type: string
       ml_model_run_id:
         description: mlflow run id where the model was logged
@@ -76,7 +80,7 @@ jobs:
         shell: bash
         env:
           ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
+          ECR_REPOSITORY: ${{ inputs.ecr_backend_repo_name }}
           IMAGE_TAG: ${{ inputs.backend_image_tag }}
         run: |
           docker build "${{ inputs.docker_backend_build_dir }}" -f "${{ inputs.path_to_dockerfile_backend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
@@ -90,7 +94,7 @@ jobs:
         shell: bash
         env:
           ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          ECR_REPOSITORY: ${{ inputs.ecr_repo_name }}
+          ECR_REPOSITORY: ${{ inputs.ecr_frontend_repo_name }}
           IMAGE_TAG: ${{ inputs.frontend_image_tag }}
         run: |
           docker build "${{ inputs.docker_frontend_build_dir }}" -f "${{ inputs.path_to_dockerfile_frontend }}" --build-arg ML_MODEL_RUN_ID="${{ inputs.ml_model_run_id }}" -t "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
