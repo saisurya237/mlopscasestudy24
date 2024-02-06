@@ -111,7 +111,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_BACKEND_TASK_DEFINITION }}
           container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-          image: ${{ outputs.backend_full_image }}
+          image: ${{ steps.build-publish-backend.outputs.full_image }}
 
       - name: Deploy Amazon ECS task definition for frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
