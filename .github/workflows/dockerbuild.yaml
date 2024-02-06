@@ -1,50 +1,48 @@
 name: Docker image build and publish
-on:
-  workflow_dispatch:
-    inputs:
-      path_to_dockerfile_ui:
-        description: Path to the dockerfile (default = 'Dockerfile')
-        default: "frontend/dockerfile"
-        type: string
-      path_to_dockerfile_backend:
-        description: Path to the dockerfile (default = 'Dockerfile')
-        default: "backend/dockerfile"
-        type: string
-      docker_backend_build_dir:
-        description: Docker backend build directory (default = '.')
-        default: "backend"
-        type: string
-      docker_fronntend_build_dir:
-        description: Docker frontend build directory (default = '.')
-        default: "frontend"
-        type: string
-      backend_image_tag:
-        description: Tag to apply to backend images.
-        type: string
-        default: backend-artifact
-      frontend_image_tag:
-        description: Tag to apply to frontend images.
-        type: string
-        default: frontend-artifact
-      aws_account_id:
-        description: AWS Account ID
-        type: string
-      aws_region:
-        description: Target AWS Region
-        default: "us-east-1"
-        type: string
-      ecr_backend_repo_name:
-        description: ecr backend repo name
-        default: "mlopsbackend"
-        type: string
-      ecr_frontend_repo_name:
-        description: ecr frontend repo name
-        default: "mlopsfrontend"
-        type: string
-      ml_model_run_id:
-        description: mlflow run id where the model was logged
-        default: ""
-        type: string
+  inputs:
+    path_to_dockerfile_ui:
+      description: Path to the dockerfile (default = 'Dockerfile')
+      default: "frontend/dockerfile"
+      type: string
+    path_to_dockerfile_backend:
+      description: Path to the dockerfile (default = 'Dockerfile')
+      default: "backend/dockerfile"
+      type: string
+    docker_backend_build_dir:
+      description: Docker backend build directory (default = '.')
+      default: "backend"
+      type: string
+    docker_fronntend_build_dir:
+      description: Docker frontend build directory (default = '.')
+      default: "frontend"
+      type: string
+    backend_image_tag:
+      description: Tag to apply to backend images.
+      type: string
+      default: backend-artifact
+    frontend_image_tag:
+      description: Tag to apply to frontend images.
+      type: string
+      default: frontend-artifact
+    aws_account_id:
+      description: AWS Account ID
+      type: string
+    aws_region:
+      description: Target AWS Region
+      default: "us-east-1"
+      type: string
+    ecr_backend_repo_name:
+      description: ecr backend repo name
+      default: "mlopsbackend"
+      type: string
+    ecr_frontend_repo_name:
+      description: ecr frontend repo name
+      default: "mlopsfrontend"
+      type: string
+    ml_model_run_id:
+      description: mlflow run id where the model was logged
+      default: ""
+      type: string
 
 jobs:
   docker:
