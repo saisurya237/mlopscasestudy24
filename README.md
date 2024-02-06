@@ -27,3 +27,4 @@ Notes -
 3. Git actions - CI CD platform for this case study, it is a really good open source tool to setup your Continous Integration and Continous Deployment.
 4. ECS - Elastic Container Service, It is aws serverless service used to deploy the containerized applications.
 5. LightGBM model - LightGBM is a gradient boosting framework that uses tree-based learning algorithms. It provides a range of parameters that can be tuned to optimize the performance of the model. The parameters can be set both in a configuration file and on the command line. The lightgbm.LGBMClassifier and lightgbm.LGBMModel classes are used to construct gradient boosting models in LightGBM.
+6. ACT - opensource github workflow local validation tool. [ACT](https://github.com/nektos/act?tab=readme-ov-file)
