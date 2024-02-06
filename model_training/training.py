@@ -21,12 +21,14 @@ PATH = "../mlopscasestudy24/data/"
 train_df = pd.read_csv(PATH+"train.csv")
 test_df = pd.read_csv(PATH+"test.csv")
 
-feature_engineering(train_df, test_df)
+features = [c for c in train_df.columns if c not in ['ID_code', 'target']]
+target = train_df['target']
+idx = train_df.columns.values[2:202]
+train_df = feature_engineering(train_df, idx, features)
+test_df = feature_engineering(test_df, idx, features)
 
 features = [c for c in train_df.columns if c not in ['ID_code', 'target']]
 target = train_df['target']
-
-X_train, X_test, y_train, y_test = train_test_split(train_df, test_df, test_size=0.2, random_state=42)
 
 param = {
     'bagging_freq': 5,
@@ -85,5 +87,4 @@ with mlflow.start_run():
     # mlflow.log_metric("ROC_AUC_SCORE", ROC_AUC)
     # # Log model parameters
     # mlflow.log_param(**param)
-    # Log the trained model as an artifact
-    mlflow.lightgbm.log_model(clf, registered_model_name="model")
+

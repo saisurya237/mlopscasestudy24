@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn:python3.9
 
-ARG ML_MODEL_RUN_ID=defaulvalue
+ARG ML_MODEL_RUN_ID=defaultvalue
 ENV ML_MODEL_RUN_ID=$ML_MODEL_RUN_ID
 
 RUN mkdir /fastapi

@@ -19,7 +19,7 @@ seaborn = "^0.13.2"
 numpy = "^1.26.3"
 logging = "^0.4.9.6"
 tqdm = "^4.66.1"
-lightgbm = "^4.3.0"
+lightgbm = "4.2.0"
 mlflow = "^2.10.0"
 
 
