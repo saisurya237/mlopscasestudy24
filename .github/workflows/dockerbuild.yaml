@@ -46,7 +46,7 @@ env:
   ECS_FRONTEND_TASK_DEFINITION: .github/workflows/.aws/taskdefinitionecsfrontend.json # path of the JSON task definition
   ECS_BACKEND_TASK_DEFINITION: .github/workflows/.aws/taskdefinitionevsbackend.json #
   FRONTEND_CONTAINER_NAME: "mlops-frontend"
-  BACKEND_CONTAINER_NAME: "mlopsbackend"                          # name of the container name in the task definition
+  BACKEND_CONTAINER_NAME: "mlopsbackend"                          # name of the container name in the task definition 
 
 jobs:
   docker:
@@ -115,14 +115,17 @@ jobs:
 
       - name: Retrieve backend task definition
         id: retrive-task-definition-backend
+        env:
+          BACKEND_TASK_DEFNITION_NAME: mlops-backend-deploy
         run: |
-          task_definition=$(aws ecs describe-task-definition --task-definition my-task-definition --query 'taskDefinition' --output json)
+          task_definition=$(aws ecs describe-task-definition --task-definition $BACKEND_TASK_DEFNITION_NAME --query 'taskDefinition' --output json)
           echo "::set-output name=task_definition::$task_definition"
 
       - name: Update task definition
         id: update-task-definition-backend
         env:
           ECR_IMAGE_BACKEND: ${{ steps.build-publish-backend.outputs.full_image }}
+          BACKEND_TASK_DEFNITION_NAME: mlops-backend-deploy
         run: |
           # Use jq to update the task definition JSON
           updated_task_definition=$(echo ${{ steps.retrive-task-definition-backend.outputs.task_definition }} | jq '.containerDefinitions[0].image = "$ECR_IMAGE_BACKEND"')
@@ -136,7 +139,7 @@ jobs:
       - name: Deploy Amazon ECS task definition for backend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          task-definition: ${{ steps.update-task-definition-backend.outputs.updated_task_definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_BACKEND_SERVICE }}
 
