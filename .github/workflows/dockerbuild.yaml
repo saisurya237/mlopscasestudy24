@@ -121,7 +121,8 @@ jobs:
           BACKEND_TASK_DEFNITION_NAME: mlops-backend-deploy
         run: |
           task_definition=$(aws ecs describe-task-definition --task-definition $BACKEND_TASK_DEFNITION_NAME --query 'taskDefinition' --output json)
-          echo "::set-output name=task_definition::$task_definition" >> $GITHUB_OUTPUT
+          echo "$task_definition"
+          # echo "::set-output name=task_definition::$task_definition" >> $GITHUB_OUTPUT
 
       - name: Update task definition
         id: update-task-definition-backend
