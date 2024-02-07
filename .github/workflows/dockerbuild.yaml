@@ -59,6 +59,8 @@ jobs:
     outputs:
       backend_image_tag: ${{ steps.build-publish-backend.outputs.backend_image_tag }}
       backend_full_image: ${{ steps.build-publish-backend.outputs.full_image }}
+      task_definition: ${{ steps.retrive-task-definition-backend.outputs.task_definition }}
+      updated_task_definition: ${{ steps.update-task-definition-backend.outputs.updated_task_definition }}
 
     steps:
       - uses: actions/checkout@v3
