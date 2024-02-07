@@ -121,7 +121,7 @@ jobs:
           BACKEND_TASK_DEFNITION_NAME: mlops-backend-deploy
         run: |
           task_definition=$(aws ecs describe-task-definition --task-definition $BACKEND_TASK_DEFNITION_NAME --query 'taskDefinition' --output json)
-          echo "::set-output name=updated_task_definition::$updated_task_definition" >> $GITHUB_OUTPUT
+          echo "::set-output name=task_definition::$task_definition" >> $GITHUB_OUTPUT
 
       - name: Update task definition
         id: update-task-definition-backend
@@ -131,7 +131,7 @@ jobs:
         run: |
           # Use jq to update the task definition JSON
           updated_task_definition=$(echo ${{ steps.retrive-task-definition-backend.outputs.task_definition }} | jq '.containerDefinitions[0].image = "$ECR_IMAGE_BACKEND"')
-          echo "updated_task_definition=$updated_task_definition" >> $GITHUB_OUTPUT
+          echo "::set-output name=updated_task_definition::$updated_task_definition" >> $GITHUB_OUTPUT
 
       - name: Register updated task definition
         run: |
