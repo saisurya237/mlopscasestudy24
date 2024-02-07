@@ -41,7 +41,7 @@ env:
   path_to_dockerfile_backend: backend/dockerfile
   path_to_dockerfile_frontend: frontend/dockerfile
   ECS_FRONTEND_SERVICE: mlops-backend-service      # name of the service
-  ECS_BACKEND_SERVICE: mlops-frontend-service
+  ECS_BACKEND_SERVICE: mlopsbackendservice
   ECS_CLUSTER: mlopscasestudy24                    # name of the cluster
   ECS_FRONTEND_TASK_DEFINITION: .github/workflows/.aws/taskdefinitionecsfrontend.json # path of the JSON task definition
   ECS_BACKEND_TASK_DEFINITION: .github/workflows/.aws/taskdefinitionevsbackend.json #
@@ -105,31 +105,52 @@ jobs:
           echo "image_tag=$IMAGE_TAG" 
           echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Fill in the new image ID of backend in the Amazon ECS task definition
-        id: task-def-backend
-        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
-        with:
-          task-definition: ${{ env.ECS_BACKEND_TASK_DEFINITION }}
-          container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-          image: ${{ steps.build-publish-backend.outputs.full_image }}
+      # - name: Fill in the new image ID of backend in the Amazon ECS task definition
+      #   id: task-def-backend
+      #   uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+      #   with:
+      #     task-definition: ${{ env.ECS_BACKEND_TASK_DEFINITION }}
+      #     container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+      #     image: ${{ steps.build-publish-backend.outputs.full_image }}
 
-      - name: Deploy Amazon ECS task definition for frontend
-        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+      - name: Retrieve backend task definition
+        id: retrive-task-definition-backend
+        run: |
+          task_definition=$(aws ecs describe-task-definition --task-definition my-task-definition --query 'taskDefinition' --output json)
+          echo "::set-output name=task_definition::$task_definition"
+
+      - name: Update task definition
+        id: update-task-definition-backend
+        env:
+          ECR_IMAGE_BACKEND: ${{ steps.build-publish-backend.outputs.full_image }}
+        run: |
+          # Use jq to update the task definition JSON
+          updated_task_definition=$(echo ${{ steps.retrive-task-definition-backend.outputs.task_definition }} | jq '.containerDefinitions[0].image = "$ECR_IMAGE_BACKEND"')
+          echo "::set-output name=updated_task_definition::$updated_task_definition"
+
+      - name: Register updated task definition
+        run: |
+          # Register the updated task definition
+          aws ecs register-task-definition --cli-input-json ${{ steps.update-task-definition-backend.outputs.updated_task_definition }}
+
+      - name: Deploy Amazon ECS task definition for backend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_BACKEND_SERVICE }}
 
-      - name: Fill in the new image ID of frontend in the Amazon ECS task definition
-        id: task-def-frontend
-        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
-        with:
-          task-definition: ${{ env.ECS_FRONTEND_TASK_DEFINITION }}
-          container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
-          image: ${{ steps.build-publish-frontend.outputs.full_image }}
+      # - name: Fill in the new image ID of frontend in the Amazon ECS task definition
+      #   id: task-def-frontend
+      #   uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+      #   with:
+      #     task-definition: ${{ env.ECS_FRONTEND_TASK_DEFINITION }}
+      #     container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
+      #     image: ${{ steps.build-publish-frontend.outputs.full_image }}
 
-      - name: Deploy Amazon ECS task definition for frontend
-        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
-        with:
-          task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
-          cluster: ${{ env.ECS_CLUSTER }}
+      # - name: Deploy Amazon ECS task definition for frontend
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+      #   with:
+      #     task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
       
