@@ -121,9 +121,11 @@ jobs:
 
       - name: Update task definition
         id: update-task-definition-backend
+        env:
+          ECR_IMAGE_BACKEND: ${{ steps.build-publish-backend.outputs.full_image }}
         run: |
           # Use jq to update the task definition JSON
-          updated_task_definition=$(echo ${{ steps.retrive-task-definition-backend.outputs.task_definition }} | jq '.containerDefinitions[0].image = "new-image-tag"')
+          updated_task_definition=$(echo ${{ steps.retrive-task-definition-backend.outputs.task_definition }} | jq '.containerDefinitions[0].image = "$ECR_IMAGE_BACKEND"')
           echo "::set-output name=updated_task_definition::$updated_task_definition"
 
       - name: Register updated task definition
