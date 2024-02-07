@@ -44,7 +44,7 @@ env:
   ECS_BACKEND_SERVICE: mlops-frontend-service
   ECS_CLUSTER: mlopscasestudy24                    # name of the cluster
   ECS_FRONTEND_TASK_DEFINITION: .aws/taskdefinitionecsfrontend.json # path of the JSON task definition
-  ECS_BACKEND_TASK_DEFINITION: .aws/taskdefinitionecsbackend.json
+  ECS_BACKEND_TASK_DEFINITION: .github/workflows/.aws/taskdefinitionevsbackend.json #
   FRONTEND_CONTAINER_NAME: "mlops-frontend"
   BACKEND_CONTAINER_NAME: "mlopsbackend"                          # name of the container name in the task definition
 
