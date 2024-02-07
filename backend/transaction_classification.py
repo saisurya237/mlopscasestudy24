@@ -17,7 +17,7 @@ if model_run_id=="defaultvalue": #for local testing
 else:
     model_uri =  "runs:/"+model_run_id+"/model"
 
-print(model_run_id)
+print(model_uri)
 
 # def feature_engineering(df, idx, features):
 #     for df in [df]:
