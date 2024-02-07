@@ -89,7 +89,7 @@ jobs:
           docker push "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
-          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-publish-frontend
@@ -103,7 +103,7 @@ jobs:
           docker push "$ECR_REGISTRY/g8n4d6q1/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
-          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID of backend in the Amazon ECS task definition
         id: task-def
